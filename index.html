@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineStream</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0a0f;--surface:#12121a;--surface2:#1c1c28;--accent:#e5c07b;--accent2:#c678dd;
+    --text:#f0ead6;--muted:#7a7a9a;--red:#e06c75;--border:rgba(229,192,123,0.15);
+    --font-serif:'Playfair Display',serif;--font-sans:'DM Sans',sans-serif;
+  }
+  body{background:var(--bg);color:var(--text);font-family:var(--font-sans);min-height:100vh;overflow-x:hidden}
+  
+  /* NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2.5rem;border-bottom:0.5px solid var(--border);background:rgba(10,10,15,0.95);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+  .logo{font-family:var(--font-serif);font-size:1.6rem;font-weight:900;letter-spacing:-0.5px}
+  .logo span{color:var(--accent)}
+  .nav-links{display:flex;gap:2rem;list-style:none}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:400;transition:color 0.2s;letter-spacing:0.02em}
+  .nav-links a:hover,.nav-links a.active{color:var(--text)}
+  .nav-right{display:flex;align-items:center;gap:1rem}
+  .search-bar{background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:0.45rem 1rem;color:var(--text);font-size:0.85rem;font-family:var(--font-sans);outline:none;width:200px;transition:border-color 0.2s}
+  .search-bar::placeholder{color:var(--muted)}
+  .search-bar:focus{border-color:rgba(229,192,123,0.4)}
+  .btn-signin{background:var(--accent);color:#0a0a0f;border:none;border-radius:20px;padding:0.45rem 1.2rem;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:opacity 0.2s}
+  .btn-signin:hover{opacity:0.85}
+
+  /* HERO */
+  .hero{position:relative;height:520px;overflow:hidden;display:flex;align-items:flex-end}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a0a2e 0%,#0d1a3a 40%,#0a0a0f 100%)}
+  .hero-art{position:absolute;right:0;top:0;height:100%;width:55%;opacity:0.35}
+  .hero-art svg{width:100%;height:100%}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(10,10,15,0.95) 30%,transparent 70%),linear-gradient(to top,rgba(10,10,15,0.9) 0%,transparent 40%)}
+  .hero-content{position:relative;z-index:2;padding:0 2.5rem 3rem}
+  .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(229,192,123,0.12);border:0.5px solid rgba(229,192,123,0.3);border-radius:20px;padding:0.3rem 0.9rem;font-size:0.75rem;color:var(--accent);margin-bottom:1rem;letter-spacing:0.08em;text-transform:uppercase;font-weight:500}
+  .hero-title{font-family:var(--font-serif);font-size:3.5rem;font-weight:900;line-height:1.05;max-width:500px;margin-bottom:1rem}
+  .hero-title em{color:var(--accent);font-style:normal}
+  .hero-meta{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;font-size:0.85rem;color:var(--muted)}
+  .hero-meta .rating{color:var(--accent);font-weight:500}
+  .hero-desc{font-size:0.95rem;color:rgba(240,234,214,0.7);max-width:420px;line-height:1.7;margin-bottom:1.8rem}
+  .hero-actions{display:flex;gap:1rem;align-items:center}
+  .btn-play{display:flex;align-items:center;gap:0.7rem;background:var(--accent);color:#0a0a0f;border:none;border-radius:8px;padding:0.8rem 1.8rem;font-size:1rem;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:opacity 0.2s;text-decoration:none}
+  .btn-play:hover{opacity:0.85}
+  .play-icon{width:18px;height:18px;fill:#0a0a0f}
+  .btn-info{display:flex;align-items:center;gap:0.7rem;background:rgba(255,255,255,0.1);color:var(--text);border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;padding:0.8rem 1.5rem;font-size:1rem;cursor:pointer;font-family:var(--font-sans);transition:background 0.2s;text-decoration:none}
+  .btn-info:hover{background:rgba(255,255,255,0.15)}
+
+  /* SECTIONS */
+  section{padding:2.5rem 2.5rem}
+  .section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem}
+  .section-title{font-family:var(--font-serif);font-size:1.4rem;font-weight:700}
+  .see-all{font-size:0.8rem;color:var(--accent);text-decoration:none;letter-spacing:0.05em;text-transform:uppercase;font-weight:500}
+
+  /* CATEGORIES */
+  .category-tabs{display:flex;gap:0.7rem;margin-bottom:2rem;flex-wrap:wrap}
+  .cat-tab{background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:0.4rem 1.1rem;font-size:0.82rem;color:var(--muted);cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+  .cat-tab.active,.cat-tab:hover{background:rgba(229,192,123,0.12);border-color:rgba(229,192,123,0.4);color:var(--accent)}
+
+  /* MOVIE GRID */
+  .movie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:1.2rem}
+  .movie-card{cursor:pointer;position:relative;border-radius:10px;overflow:hidden;background:var(--surface);transition:transform 0.25s}
+  .movie-card:hover{transform:translateY(-4px)}
+  .movie-card:hover .card-overlay{opacity:1}
+  .card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+  .card-poster-art{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden}
+  .card-overlay{position:absolute;inset:0;background:rgba(10,10,15,0.85);opacity:0;transition:opacity 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem}
+  .overlay-play{width:48px;height:48px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .overlay-play svg{width:20px;height:20px;fill:#0a0a0f;margin-left:2px}
+  .overlay-title{font-size:0.85rem;font-weight:500;text-align:center;padding:0 0.5rem}
+  .card-info{padding:0.75rem 0.75rem 0.85rem}
+  .card-title{font-size:0.88rem;font-weight:500;margin-bottom:0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card-sub{font-size:0.75rem;color:var(--muted);display:flex;justify-content:space-between}
+  .card-rating{color:var(--accent);font-weight:500}
+  .badge-new{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:0.65rem;font-weight:600;padding:0.2rem 0.5rem;border-radius:4px;letter-spacing:0.05em;text-transform:uppercase}
+  .badge-hd{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:var(--muted);font-size:0.65rem;padding:0.2rem 0.4rem;border-radius:4px;border:0.5px solid rgba(255,255,255,0.15)}
+
+  /* POSTER COLORS */
+  .p1{background:linear-gradient(135deg,#1a0533,#3d0d6e)}
+  .p2{background:linear-gradient(135deg,#0d2233,#0a4d6e)}
+  .p3{background:linear-gradient(135deg,#331a00,#7a3d00)}
+  .p4{background:linear-gradient(135deg,#1a1a00,#4d4d00)}
+  .p5{background:linear-gradient(135deg,#330011,#7a0033)}
+  .p6{background:linear-gradient(135deg,#001a33,#003d6e)}
+  .p7{background:linear-gradient(135deg,#0d330d,#1a6e1a)}
+  .p8{background:linear-gradient(135deg,#33001a,#6e0d3d)}
+  .p9{background:linear-gradient(135deg,#1a0a00,#4d2200)}
+  .p10{background:linear-gradient(135deg,#00001a,#000d4d)}
+
+  /* POSTER SYMBOLS */
+  .sym{font-size:3.5rem;opacity:0.6;filter:drop-shadow(0 0 20px rgba(229,192,123,0.3))}
+
+  /* TRENDING ROW */
+  .trending-row{display:flex;gap:1rem;overflow-x:auto;padding-bottom:0.5rem;scrollbar-width:none}
+  .trending-row::-webkit-scrollbar{display:none}
+  .trending-item{flex:0 0 280px;background:var(--surface);border-radius:10px;overflow:hidden;border:0.5px solid var(--border);display:flex;gap:0}
+  .trending-num{font-family:var(--font-serif);font-size:3rem;font-weight:900;color:rgba(229,192,123,0.15);padding:1rem 0.5rem 1rem 1rem;line-height:1;align-self:flex-end}
+  .trending-thumb{width:80px;flex:0 0 80px;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+  .trending-details{padding:1rem 1rem 1rem 0.5rem;flex:1}
+  .trending-title{font-size:0.9rem;font-weight:500;margin-bottom:0.25rem}
+  .trending-meta{font-size:0.75rem;color:var(--muted)}
+
+  /* CONTINUE WATCHING */
+  .continue-row{display:flex;gap:1rem;overflow-x:auto;padding-bottom:0.5rem;scrollbar-width:none}
+  .continue-row::-webkit-scrollbar{display:none}
+  .continue-card{flex:0 0 260px;background:var(--surface);border-radius:10px;overflow:hidden;border:0.5px solid var(--border)}
+  .continue-thumb{width:100%;height:145px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative}
+  .progress-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.1)}
+  .progress-fill{height:100%;background:var(--accent)}
+  .continue-info{padding:0.75rem}
+  .continue-title{font-size:0.88rem;font-weight:500;margin-bottom:0.2rem}
+  .continue-sub{font-size:0.75rem;color:var(--muted)}
+
+  /* FOOTER */
+  footer{border-top:0.5px solid var(--border);padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+  .footer-logo{font-family:var(--font-serif);font-size:1.2rem;font-weight:900}
+  .footer-logo span{color:var(--accent)}
+  .footer-links{display:flex;gap:1.5rem}
+  .footer-links a{font-size:0.8rem;color:var(--muted);text-decoration:none}
+  .footer-links a:hover{color:var(--text)}
+  .footer-copy{font-size:0.75rem;color:var(--muted)}
+
+  /* MODAL */
+  .modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+  .modal-wrap.open{display:flex}
+  .modal{background:var(--surface);border-radius:16px;border:0.5px solid var(--border);max-width:680px;width:90%;max-height:90vh;overflow-y:auto;position:relative}
+  .modal-video{width:100%;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center;border-radius:12px 12px 0 0;overflow:hidden}
+  .video-placeholder{text-align:center;color:var(--muted)}
+  .video-play-btn{width:72px;height:72px;background:rgba(229,192,123,0.2);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;cursor:pointer;transition:background 0.2s}
+  .video-play-btn:hover{background:rgba(229,192,123,0.35)}
+  .video-play-btn svg{width:28px;height:28px;fill:var(--accent);margin-left:4px}
+  .modal-body{padding:1.5rem}
+  .modal-title{font-family:var(--font-serif);font-size:1.6rem;font-weight:700;margin-bottom:0.5rem}
+  .modal-meta{display:flex;gap:1rem;font-size:0.82rem;color:var(--muted);margin-bottom:1rem;flex-wrap:wrap}
+  .modal-meta span{display:flex;align-items:center;gap:0.25rem}
+  .modal-rating{color:var(--accent);font-weight:600}
+  .modal-desc{font-size:0.9rem;line-height:1.75;color:rgba(240,234,214,0.8);margin-bottom:1.5rem}
+  .modal-actions{display:flex;gap:0.75rem;margin-bottom:1.5rem}
+  .modal-genres{display:flex;gap:0.5rem;flex-wrap:wrap}
+  .genre-pill{background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:0.3rem 0.8rem;font-size:0.75rem;color:var(--muted)}
+  .modal-close{position:absolute;top:1rem;right:1rem;background:rgba(10,10,15,0.7);border:0.5px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:1.2rem;transition:background 0.2s;z-index:10}
+  .modal-close:hover{background:var(--surface2)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Cine<span>Stream</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Movies</a></li>
+    <li><a href="#">TV Shows</a></li>
+    <li><a href="#">My List</a></li>
+  </ul>
+  <div class="nav-right">
+    <input class="search-bar" type="text" placeholder="Search titles, actors...">
+    <button class="btn-signin">Sign In</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-art">
+    <svg viewBox="0 0 600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="300" cy="260" r="200" fill="url(#heroGrad)" opacity="0.3"/>
+      <circle cx="300" cy="260" r="140" fill="url(#heroGrad2)" opacity="0.2"/>
+      <circle cx="300" cy="260" r="80" fill="rgba(229,192,123,0.15)"/>
+      <text x="300" y="295" text-anchor="middle" font-size="100" opacity="0.7">🎬</text>
+      <defs>
+        <radialGradient id="heroGrad" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#c678dd"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <radialGradient id="heroGrad2" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#e5c07b"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Featured Film</div>
+    <h1 class="hero-title">The Last <em>Eclipse</em></h1>
+    <div class="hero-meta">
+      <span class="rating">★ 8.7</span>
+      <span>2024</span>
+      <span>2h 18m</span>
+      <span>Sci-Fi · Thriller</span>
+    </div>
+    <p class="hero-desc">When an astronaut discovers a signal from the edge of the universe, she must race against time to decode its message — before humanity makes an irreversible choice.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-play" onclick="openModal(featuredMovie);return false;">
+        <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Watch Now
+      </a>
+      <a href="#" class="btn-info" onclick="openModal(featuredMovie);return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        More Info
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY TABS -->
+<section style="padding-bottom:0">
+  <div class="category-tabs">
+    <button class="cat-tab active" onclick="filterCat(this,'all')">All</button>
+    <button class="cat-tab" onclick="filterCat(this,'action')">Action</button>
+    <button class="cat-tab" onclick="filterCat(this,'drama')">Drama</button>
+    <button class="cat-tab" onclick="filterCat(this,'scifi')">Sci-Fi</button>
+    <button class="cat-tab" onclick="filterCat(this,'comedy')">Comedy</button>
+    <button class="cat-tab" onclick="filterCat(this,'horror')">Horror</button>
+    <button class="cat-tab" onclick="filterCat(this,'romance')">Romance</button>
+  </div>
+</section>
+
+<!-- CONTINUE WATCHING -->
+<section>
+  <div class="section-header">
+    <h2 class="section-title">Continue Watching</h2>
+    <a href="#" class="see-all">See all →</a>
+  </div>
+  <div class="continue-row">
+    <div class="continue-card">
+      <div class="continue-thumb p1"><span>🚀</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+      </div>
+      <div class="continue-info">
+        <div class="continue-title">Stellar Odyssey</div>
+        <div class="continue-sub">S2 E4 · 38 min left</div>
+      </div>
+    </div>
+    <div class="continue-card">
+      <div class="continue-thumb p3"><span>🗡️</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+      </div>
+      <div class="continue-info">
+        <div class="continue-title">Kingdom of Ash</div>
+        <div class="continue-sub">1h 22 min left</div>
+      </div>
+    </div>
+    <div class="continue-card">
+      <div class="continue-thumb p6"><span>🔍</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+      </div>
+      <div class="continue-info">
+        <div class="continue-title">The Investigator</div>
+        <div class="continue-sub">S1 E7 · 12 min left</div>
+      </div>
+    </div>
+    <div class="continue-card">
+      <div class="continue-thumb p5"><span>🌹</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+      </div>
+      <div class="continue-info">
+        <div class="continue-title">Midnight Bloom</div>
+        <div class="continue-sub">52 min left</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING -->
+<section>
+  <div class="section-header">
+    <h2 class="section-title">Trending This Week</h2>
+    <a href="#" class="see-all">See all →</a>
+  </div>
+  <div class="trending-row">
+    <div class="trending-item" style="cursor:pointer" onclick="openModal(trendingMovies[0])">
+      <div class="trending-num">1</div>
+      <div class="trending-thumb p2"><span>🌊</span></div>
+      <div class="trending-details">
+        <div class="trending-title">Tidal Force</div>
+        <div class="trending-meta">★ 9.1 · Action · 2024</div>
+      </div>
+    </div>
+    <div class="trending-item" style="cursor:pointer" onclick="openModal(trendingMovies[1])">
+      <div class="trending-num">2</div>
+      <div class="trending-thumb p7"><span>🌲</span></div>
+      <div class="trending-details">
+        <div class="trending-title">The Forest Code</div>
+        <div class="trending-meta">★ 8.9 · Mystery · 2024</div>
+      </div>
+    </div>
+    <div class="trending-item" style="cursor:pointer" onclick="openModal(trendingMovies[2])">
+      <div class="trending-num">3</div>
+      <div class="trending-thumb p4"><span>⚡</span></div>
+      <div class="trending-details">
+        <div class="trending-title">Storm Protocol</div>
+        <div class="trending-meta">★ 8.6 · Thriller · 2024</div>
+      </div>
+    </div>
+    <div class="trending-item" style="cursor:pointer" onclick="openModal(trendingMovies[3])">
+      <div class="trending-num">4</div>
+      <div class="trending-thumb p8"><span>🎭</span></div>
+      <div class="trending-details">
+        <div class="trending-title">Masquerade</div>
+        <div class="trending-meta">★ 8.4 · Drama · 2023</div>
+      </div>
+    </div>
+    <div class="trending-item" style="cursor:pointer" onclick="openModal(trendingMovies[4])">
+      <div class="trending-num">5</div>
+      <div class="trending-thumb p9"><span>🔥</span></div>
+      <div class="trending-details">
+        <div class="trending-title">Ember Rising</div>
+        <div class="trending-meta">★ 8.2 · Action · 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOVIE GRID -->
+<section>
+  <div class="section-header">
+    <h2 class="section-title">New Releases</h2>
+    <a href="#" class="see-all">See all →</a>
+  </div>
+  <div class="movie-grid" id="movieGrid"></div>
+</section>
+
+<!-- TOP RATED -->
+<section>
+  <div class="section-header">
+    <h2 class="section-title">Top Rated All Time</h2>
+    <a href="#" class="see-all">See all →</a>
+  </div>
+  <div class="movie-grid" id="topRatedGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Cine<span>Stream</span></div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Help</a>
+    <a href="#">Careers</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2024 CineStream. All rights reserved.</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-wrap" id="modalWrap" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal(null,true)">✕</button>
+    <div class="modal-video" id="modalVideo">
+      <div class="video-placeholder">
+        <div class="video-play-btn" onclick="playVideo()">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p style="font-size:0.85rem">Click to play trailer</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title" id="mTitle"></h2>
+      <div class="modal-meta" id="mMeta"></div>
+      <p class="modal-desc" id="mDesc"></p>
+      <div class="modal-actions">
+        <button class="btn-play" style="font-size:0.9rem;padding:0.65rem 1.4rem">
+          <svg style="width:15px;height:15px;fill:#0a0a0f" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Play Now
+        </button>
+        <button class="btn-info" style="font-size:0.9rem;padding:0.65rem 1.2rem">+ My List</button>
+        <button class="btn-info" style="font-size:0.9rem;padding:0.65rem 1.2rem">↗ Share</button>
+      </div>
+      <div class="modal-genres" id="mGenres"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const movies = [
+  {title:"Neon Requiem",year:2024,rating:8.5,duration:"2h 4m",genre:["Sci-Fi","Noir"],cat:"scifi",emoji:"🌃",color:"p1",desc:"A detective in a rain-soaked future city uncovers a conspiracy that blurs the line between human and artificial consciousness.",isNew:true,isHD:true},
+  {title:"Wild Meridian",year:2024,rating:7.9,duration:"1h 56m",genre:["Action","Adventure"],cat:"action",emoji:"🏔️",color:"p3",desc:"A rogue expedition into unmapped territory forces a team of scientists to confront something ancient and hungry.",isNew:true,isHD:true},
+  {title:"Veil of Autumn",year:2024,rating:8.2,duration:"2h 12m",genre:["Drama","Romance"],cat:"romance",emoji:"🍂",color:"p4",desc:"Two strangers bound by an old family secret navigate grief, love, and the passage of time across three decades.",isNew:false,isHD:true},
+  {title:"The Deep Protocol",year:2024,rating:9.0,duration:"2h 28m",genre:["Thriller","Sci-Fi"],cat:"scifi",emoji:"🌊",color:"p6",desc:"A submarine crew discovers a signal that could end the cold war — or trigger a new kind of conflict beneath the sea.",isNew:true,isHD:true},
+  {title:"Laughing Stock",year:2024,rating:7.5,duration:"1h 42m",genre:["Comedy"],cat:"comedy",emoji:"🎤",color:"p7",desc:"A failed comedian inherits a crumbling theater and must put on the show of his life to save it.",isNew:false,isHD:false},
+  {title:"Hollow Ground",year:2023,rating:8.1,duration:"1h 58m",genre:["Horror","Mystery"],cat:"horror",emoji:"🕯️",color:"p5",desc:"A family moves into a house with no history — only to discover that something in the walls refuses to stay buried.",isNew:false,isHD:true},
+  {title:"Quantum Hearts",year:2024,rating:7.8,duration:"2h 6m",genre:["Sci-Fi","Romance"],cat:"romance",emoji:"💫",color:"p2",desc:"In a world where memory can be transplanted, a man falls in love with someone else's past.",isNew:true,isHD:true},
+  {title:"Iron Lullaby",year:2024,rating:8.3,duration:"2h 16m",genre:["Drama"],cat:"drama",emoji:"🎻",color:"p8",desc:"The story of a legendary conductor's final season — and the apprentice determined to preserve his most personal composition.",isNew:false,isHD:true},
+];
+
+const topRated = [
+  {title:"Echoes of Light",year:2022,rating:9.3,duration:"2h 34m",genre:["Drama","Sci-Fi"],cat:"drama",emoji:"✨",color:"p10",desc:"A spacecraft crew on a 200-year journey must confront their own mortality as signals from Earth go silent.",isNew:false,isHD:true},
+  {title:"The Salt Road",year:2021,rating:9.1,duration:"2h 8m",genre:["Drama"],cat:"drama",emoji:"🏜️",color:"p9",desc:"An epic journey across a dying landscape by a mother searching for her missing son — told across five generations.",isNew:false,isHD:true},
+  {title:"Frozen Signal",year:2020,rating:8.9,duration:"1h 52m",genre:["Thriller"],cat:"action",emoji:"❄️",color:"p6",desc:"A journalist uncovers a decades-old cover-up buried beneath an Arctic research station.",isNew:false,isHD:true},
+  {title:"Glass & Fire",year:2023,rating:8.8,duration:"2h 2m",genre:["Action","Drama"],cat:"action",emoji:"🔥",color:"p3",desc:"An undercover agent in a corrupt city must choose between his mission and the community he's grown to love.",isNew:false,isHD:true},
+];
+
+const featuredMovie = {title:"The Last Eclipse",year:2024,rating:8.7,duration:"2h 18m",genre:["Sci-Fi","Thriller"],desc:"When an astronaut discovers a signal from the edge of the universe, she must race against time to decode its message — before humanity makes an irreversible choice."};
+const trendingMovies = [
+  {title:"Tidal Force",year:2024,rating:9.1,duration:"2h 10m",genre:["Action"],desc:"A deep-sea rescue team battles a cataclysmic ocean event while uncovering a secret naval experiment gone wrong."},
+  {title:"The Forest Code",year:2024,rating:8.9,duration:"1h 58m",genre:["Mystery","Thriller"],desc:"A cryptographer discovers messages hidden in ancient trees that hint at a vanished civilization — and a lurking danger."},
+  {title:"Storm Protocol",year:2024,rating:8.6,duration:"2h 4m",genre:["Thriller"],desc:"When weather control technology falls into the wrong hands, a meteorologist becomes the world's last line of defense."},
+  {title:"Masquerade",year:2023,rating:8.4,duration:"2h 20m",genre:["Drama","Mystery"],desc:"At an elite masquerade ball, the host is found dead — and every guest has a reason to hide the truth."},
+  {title:"Ember Rising",year:2024,rating:8.2,duration:"1h 54m",genre:["Action","Drama"],desc:"In a city perpetually at war with wildfires, one firefighter uncovers arson at the heart of the disaster."},
+];
+
+function renderGrid(containerId, data){
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = data.map(m=>`
+    <div class="movie-card" onclick='openModal(${JSON.stringify(m)})'>
+      ${m.isNew?'<span class="badge-new">New</span>':''}
+      ${m.isHD?'<span class="badge-hd">HD</span>':''}
+      <div class="card-poster-art ${m.color}"><span class="sym">${m.emoji}</span></div>
+      <div class="card-overlay">
+        <div class="overlay-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="overlay-title">${m.title}</div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${m.title}</div>
+        <div class="card-sub"><span>${m.year} · ${m.duration}</span><span class="card-rating">★ ${m.rating}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderGrid('movieGrid', movies);
+renderGrid('topRatedGrid', topRated);
+
+function filterCat(btn, cat){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat==='all'?movies:movies.filter(m=>m.cat===cat);
+  renderGrid('movieGrid', filtered.length?filtered:movies);
+}
+
+function openModal(movie){
+  document.getElementById('mTitle').textContent = movie.title;
+  document.getElementById('mDesc').textContent = movie.desc;
+  document.getElementById('mMeta').innerHTML = `
+    <span class="modal-rating">★ ${movie.rating||'N/A'}</span>
+    <span>${movie.year}</span>
+    <span>${movie.duration||''}</span>
+  `;
+  document.getElementById('mGenres').innerHTML = (movie.genre||[]).map(g=>`<span class="genre-pill">${g}</span>`).join('');
+  document.getElementById('modalVideo').innerHTML = `
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.75rem">
+      <div class="video-play-btn" onclick="playVideo()">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <p style="font-size:0.82rem;color:var(--muted)">Click to play trailer</p>
+    </div>`;
+  document.getElementById('modalWrap').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(e, force){
+  if(force || (e && e.target===document.getElementById('modalWrap'))){
+    document.getElementById('modalWrap').classList.remove('open');
+    document.body.style.overflow='';
+  }
+}
+
+function playVideo(){
+  document.getElementById('modalVideo').innerHTML = `
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;padding:2rem;text-align:center">
+      <div style="font-size:3rem">🎬</div>
+      <p style="color:var(--text);font-size:1rem;font-weight:500">Stream starting...</p>
+      <p style="color:var(--muted);font-size:0.82rem">In a full build, your video player would appear here.</p>
+    </div>`;
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal(null,true)});
+</script>
+</body>
+</html>
